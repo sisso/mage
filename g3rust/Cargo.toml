@@ -1,0 +1,17 @@
+[package]
+name = "g3rust"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+gdnative = "0.11"
+domain = { path = "../domain", version = "*" }
+log="0.4"
+specs = { version = "0.19", features = ["serde"] }
+specs-derive = "0.4"
+shred = { version = "0.14", default-features = false }
+shred-derive = "0.6"
+itertools = "0.10"

@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=3 uid="uid://dpi310m5jxph7"]
+
+[ext_resource type="Texture2D" uid="uid://gtej346tu35q" path="res://textures/mage01.png" id="1_0bjpa"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_euwdf"]
+atlas = ExtResource("1_0bjpa")
+region = Rect2(100, 0, 100, 78)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_juscm"]
+atlas = ExtResource("1_0bjpa")
+region = Rect2(0, 0, 100, 78)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_51y8j"]
+atlas = ExtResource("1_0bjpa")
+region = Rect2(200, 0, 100, 78)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5ftlu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_euwdf")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_juscm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_51y8j")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 3.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ptsya"]
+
+[node name="Player" type="Player"]
+position = Vector2(479, 287)
+mass = 70.0
+can_sleep = false
+freeze_mode = 1
+constant_torque = 100.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_5ftlu")
+animation = &"walk"
+autoplay = "walk"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ptsya")

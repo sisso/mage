@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://1gvu5lyj831t"]
+
+[ext_resource type="PackedScene" uid="uid://dn7idlmckx1sf" path="res://arena.tscn" id="1_krbp6"]
+[ext_resource type="PackedScene" uid="uid://dpi310m5jxph7" path="res://player.tscn" id="2_6i4u0"]
+
+[node name="Root" type="Node2D"]
+position = Vector2(-1, 0)
+
+[node name="Controller" type="Controller" parent="."]
+
+[node name="Arena" parent="." instance=ExtResource("1_krbp6")]
+position = Vector2(-2, -129)
+scale = Vector2(1.44, 1.44)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="Player" parent="." instance=ExtResource("2_6i4u0")]
+position = Vector2(610, 319)

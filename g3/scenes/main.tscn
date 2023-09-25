@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://src/api.gdns" type="Script" id=1]
+[ext_resource path="res://scenes/arena_ui.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/controller.gd" type="Script" id=3]
+[ext_resource path="res://scenes/arena.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/player.tscn" type="PackedScene" id=5]
+
+[node name="main" type="Node2D"]
+
+[node name="api" type="Node2D" parent="."]
+script = ExtResource( 1 )
+
+[node name="controller" type="Node2D" parent="."]
+script = ExtResource( 3 )
+
+[node name="arena" parent="." instance=ExtResource( 4 )]
+position = Vector2( 508, 295 )
+
+[node name="objects" type="Node2D" parent="."]
+
+[node name="player" parent="objects" instance=ExtResource( 5 )]
+position = Vector2( 544, 324 )
+
+[node name="arena_ui" parent="." instance=ExtResource( 2 )]
