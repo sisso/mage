@@ -17,6 +17,7 @@ pub struct Velocity {
 #[derive(Component, Debug, Clone)]
 pub struct Player {
     pub input: PlayerInput,
+    pub score: Score,
 }
 
 #[derive(Component, Debug, Clone)]
@@ -138,8 +139,9 @@ impl Caster {
 
 #[derive(Component, Debug, Clone)]
 pub struct Damageable {
-    pub hp: f32,
-    pub max_hp: f32,
+    pub hp: Hp,
+    pub max_hp: Hp,
+    pub kill_score: Score,
 }
 
 #[derive(Component, Debug, Clone)]
@@ -185,11 +187,16 @@ pub enum Team {
     Enemy,
 }
 
+#[derive(Clone, Debug, Copy, PartialEq, Eq, Component)]
+pub struct Owner {
+    pub entity: Entity,
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
-    const spell: Spell = Spell {
+    const SPELL: Spell = Spell {
         mana_cost: 5.0,
         cast_complexity: 1.0,
         calm_down_complexity: 1.0,
@@ -203,18 +210,18 @@ mod test {
     #[test]
     fn test_caster_casting() {
         let mut c = new_caster();
-        c.cast(&spell);
+        assert!(c.cast(&SPELL).is_ok());
         assert!(c.casting.get_casting().is_some());
-        let mana_after_cast = c.max_mana - spell.mana_cost;
+        let mana_after_cast = c.max_mana - SPELL.mana_cost;
         assert_eq!(mana_after_cast, c.mana);
     }
 
     #[test]
     fn test_caster_without_mana() {
         let mut c = new_caster();
-        let not_enough_mana = spell.mana_cost - 1.0;
+        let not_enough_mana = SPELL.mana_cost - 1.0;
         c.mana = not_enough_mana;
-        c.cast(&spell);
+        assert!(c.cast(&SPELL).is_err());
         assert!(c.casting.is_idle());
         assert_eq!(not_enough_mana, c.mana);
     }

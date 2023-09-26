@@ -1,9 +1,12 @@
-use super::components::*;
-use crate::cfg;
-use crate::models::*;
+use std::sync::Arc;
+
 use glam::Vec2;
 use specs::prelude::*;
-use std::sync::Arc;
+
+use crate::cfg;
+use crate::models::*;
+
+use super::components::*;
 
 pub fn load_player(world: &mut World, pos: V2) -> Entity {
     world
@@ -12,11 +15,13 @@ pub fn load_player(world: &mut World, pos: V2) -> Entity {
         .with(Velocity::default())
         .with(Player {
             input: PlayerInput::default(),
+            score: 0,
         })
         .with(Team::Player)
         .with(Damageable {
             hp: 100.0,
             max_hp: 100.0,
+            kill_score: 0,
         })
         .with(Critter { speed: 100.0 })
         .with(HasModel {
@@ -33,6 +38,7 @@ pub fn load_player(world: &mut World, pos: V2) -> Entity {
 
 pub fn create_magic_missile<B: Builder>(
     builder: B,
+    owner: Option<Entity>,
     pos: Position,
     dir: Vec2,
     damage: Damage,
@@ -56,6 +62,7 @@ pub fn create_magic_missile<B: Builder>(
             sensor: true,
         })
         .with(Deadline { deadline })
+        .maybe_with(owner.map(|own| Owner { entity: own }))
 }
 
 pub fn new_critter<B: Builder>(builder: B, pos: Position) -> B {
@@ -69,6 +76,7 @@ pub fn new_critter<B: Builder>(builder: B, pos: Position) -> B {
         .with(Damageable {
             hp: 10.0,
             max_hp: 10.0,
+            kill_score: 1,
         })
         .with(Velocity {
             vel: Default::default(),

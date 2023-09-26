@@ -10,6 +10,7 @@ impl Events {
     pub fn take(&mut self) -> Events {
         let added = std::mem::replace(&mut self.added, Vec::new());
         let removed = std::mem::replace(&mut self.removed, Vec::new());
-        Events { added, removed }
+        let result = Events { added, removed };
+        result
     }
 }

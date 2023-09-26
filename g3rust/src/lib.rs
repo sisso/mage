@@ -58,6 +58,7 @@ pub struct PlayerDto {
     pub critter: CritterDto,
     pub caster: CasterDto,
     pub obj: ObjChangeDto,
+    pub score: i32,
 }
 
 #[derive(ToVariant, FromVariant, Debug, Clone, Default)]
@@ -150,7 +151,7 @@ impl GameApi {
         let caster_repo = self.api.world.read_storage::<Caster>();
         let entities = self.api.world.entities();
 
-        let (e, pos, _, _cri, vel, cas) = (
+        let (e, pos, player, _cri, vel, cas) = (
             &entities,
             &position_repo,
             &player_repo,
@@ -178,6 +179,7 @@ impl GameApi {
             },
             critter: CritterDto {},
             caster: caster_dto,
+            score: player.score,
         })
     }
 

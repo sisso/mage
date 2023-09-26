@@ -3,9 +3,10 @@ use std::collections::HashSet;
 use rand::prelude::*;
 use specs::prelude::*;
 
+use crate::damage;
 use crate::events::Events;
 use crate::models::{Contacts, DeltaTime, Kind, SceneryParams, TotalTime, V2};
-use crate::{cfg, unwrap_or_continue, unwrap_or_return};
+use crate::{cfg, unwrap_or_return};
 use crate::{loader, math};
 
 use super::components::*;
@@ -110,7 +111,11 @@ impl<'a> System<'a> for CasterSystem {
         &mut self,
         (mut casters, positions, frame, mut entities, updates, mut events): Self::SystemData,
     ) {
-        for (cas, pos) in (&mut casters, &positions).join() {
+        // TODO: hack collect: used to free &entities so we can create a builder later
+        for (caster_entity, cas, pos) in (&entities, &mut casters, &positions)
+            .join()
+            .collect::<Vec<_>>()
+        {
             cas.update(frame.delta_time);
 
             if let Some(spell) = cas.has_cast() {
@@ -118,8 +123,9 @@ impl<'a> System<'a> for CasterSystem {
 
                 match spell.kind {
                     Kind::Projectile { damage, speed, ttl } => {
-                        let e = loader::create_magic_missile(
+                        let missile_entity = loader::create_magic_missile(
                             updates.create_entity(&mut entities),
+                            Some(caster_entity),
                             Position {
                                 pos: casting_pos,
                                 angle: pos.angle,
@@ -130,8 +136,8 @@ impl<'a> System<'a> for CasterSystem {
                             frame.total_time.add(ttl),
                         )
                         .build();
-                        log::debug!("casting spell {:?}", e);
-                        events.added.push(e);
+                        log::debug!("casting spell {:?}", missile_entity);
+                        events.added.push(missile_entity);
                     }
                     _ => todo!(),
                 }
@@ -347,13 +353,24 @@ impl<'a> System<'a> for DamageColliderSystem {
         WriteStorage<'a, Damageable>,
         ReadExpect<'a, Contacts>,
         WriteExpect<'a, Events>,
+        WriteStorage<'a, Player>,
+        ReadStorage<'a, Owner>,
     );
 
     fn run(
         &mut self,
-        (entities, damage_colliders, teams, mut damageables, contacts, mut events): Self::SystemData,
+        (
+            entities,
+            damage_colliders,
+            teams,
+            mut damageables,
+            contacts,
+            mut events,
+            mut players,
+            owners,
+        ): Self::SystemData,
     ) {
-        let mut damages = vec![];
+        let mut hits = vec![];
 
         for (a, b) in contacts.list().iter().copied() {
             let a_team = teams.get(a);
@@ -367,7 +384,11 @@ impl<'a> System<'a> for DamageColliderSystem {
             // check if a can damage b
             match (a_damage, b_team, b_damageable) {
                 (Some(a_damage), Some(b_team), Some(_)) if a_damage.affects == *b_team => {
-                    damages.push((b, a_damage.damage));
+                    hits.push(damage::Hit {
+                        source: a,
+                        target: b,
+                        amount: a_damage.damage,
+                    });
                     if a_damage.disposable {
                         log::trace!("{:?} hit {:?}, deleting it", a, b);
                         entities.delete(a).unwrap();
@@ -380,7 +401,11 @@ impl<'a> System<'a> for DamageColliderSystem {
             // check if b can damage a
             match (b_damage, a_team, a_damageable) {
                 (Some(b_damage), Some(a_team), Some(_)) if b_damage.affects == *a_team => {
-                    damages.push((a, b_damage.damage));
+                    hits.push(damage::Hit {
+                        source: b,
+                        target: a,
+                        amount: b_damage.damage,
+                    });
                     if b_damage.disposable {
                         log::trace!("{:?} hit {:?}, deleting it", b, a);
                         entities.delete(b).unwrap();
@@ -391,17 +416,15 @@ impl<'a> System<'a> for DamageColliderSystem {
             }
         }
 
-        for (e, damage) in damages {
-            log::trace!("{:?} receive {:?}", e, damage);
-
-            let damageable = unwrap_or_continue!(damageables.get_mut(e));
-            damageable.hp -= damage;
-
-            if damageable.hp < 0.0 {
-                log::trace!("{:?} died, deleting it", e);
-                entities.delete(e).unwrap();
-                events.removed.push(e);
-            }
+        for hit in hits {
+            damage::process_hit(
+                hit,
+                &entities,
+                &mut events,
+                &owners,
+                &mut players,
+                &mut damageables,
+            );
         }
     }
 }

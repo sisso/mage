@@ -1,14 +1,17 @@
-use crate::components::*;
-use crate::error::GameError;
-use crate::models::*;
-use crate::systems::*;
 use log::LevelFilter;
 use rand::prelude::StdRng;
 use rand::SeedableRng;
 use specs::prelude::*;
 
+use crate::components::*;
+use crate::error::GameError;
+use crate::events::Events;
+use crate::models::*;
+use crate::systems::*;
+
 pub mod cfg;
 pub mod components;
+pub mod damage;
 pub mod error;
 pub mod events;
 pub mod loader;
@@ -16,8 +19,6 @@ pub mod math;
 pub mod models;
 pub mod systems;
 pub mod utils;
-
-use crate::events::Events;
 
 #[macro_export]
 macro_rules! unwrap_or_continue {
@@ -65,6 +66,7 @@ impl Default for Api {
         world.register::<Collider>();
         world.register::<Damageable>();
         world.register::<Team>();
+        world.register::<Owner>();
 
         Self {
             world,
