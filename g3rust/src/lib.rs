@@ -35,7 +35,10 @@ pub struct CasterDto {
 }
 
 #[derive(ToVariant, FromVariant, Debug, Clone, Default)]
-pub struct CritterDto {}
+pub struct CritterDto {
+    pub hp: f32,
+    pub max_hp: f32,
+}
 
 #[derive(ToVariant, FromVariant, Debug, Clone, Default)]
 pub struct ObjDto {
@@ -153,14 +156,16 @@ impl GameApi {
         let velocities_repo = self.api.world.read_storage::<Velocity>();
         let caster_repo = self.api.world.read_storage::<Caster>();
         let entities = self.api.world.entities();
+        let damagables = self.api.world.read_storage::<Damageable>();
 
-        let (e, pos, player, _cri, vel, cas) = (
+        let (e, pos, pla, _cri, vel, cas, dam) = (
             &entities,
             &position_repo,
             &player_repo,
             &critter_repo,
             &velocities_repo,
             &caster_repo,
+            &damagables,
         )
             .join()
             .next()
@@ -180,11 +185,14 @@ impl GameApi {
                 angle: pos.angle,
                 current_speed: vel.vel.length(),
             },
-            critter: CritterDto {},
+            critter: CritterDto {
+                hp: dam.hp,
+                max_hp: dam.max_hp,
+            },
             caster: caster_dto,
-            score: player.score,
-            score_next_level: player.next_level_required_score(),
-            level: player.level,
+            score: pla.score,
+            score_next_level: pla.next_level_required_score(),
+            level: pla.level,
         })
     }
 

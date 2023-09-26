@@ -86,7 +86,7 @@ impl Caster {
         // update mana
         if self.mana < self.max_mana {
             let new_mana = self.mana + self.mana_recharge * delta_time.as_seconds_f32();
-            log::debug!("recharging mana {:.0}/{:.0}", new_mana, self.max_mana);
+            log::trace!("recharging mana {:.0}/{:.0}", new_mana, self.max_mana);
             self.mana = self.max_mana.min(new_mana);
         } else {
             self.mana = self.max_mana;
@@ -98,7 +98,7 @@ impl Caster {
             CasterState::Idle => {}
             CasterState::Casting { spell, progress } => {
                 *progress -= cast_skill;
-                log::debug!("casting progress {:.2}", progress);
+                log::trace!("casting progress {:.2}", progress);
                 if *progress <= 0.0 {
                     let spell = spell.clone();
                     self.casting = CasterState::Cast { spell };

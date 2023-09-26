@@ -6,13 +6,14 @@ func _ready():
 	label = get_node("description_label")
 
 func update_dto(player_dto):
-	var fmt = "Mana: {0}/{1}\nCasting: {2}\nCalm down: {3}\nScore: {4}/{5}\nLevel: {6}"
-	var caster = player_dto.caster
+	var fmt = "HP: {0}/{1}\nMana: {2}/{3}\nCasting: {4}\nCalm down: {5}\nScore: {6}/{7}\nLevel: {8}"
 	var buffer = fmt.format([
-		stepify(caster.mana, 0.01),
-		stepify(caster.max_mana, 0.01),
-		stepify(caster.casting, 0.01),
-		stepify(caster.calm_down, 0.01),
+		stepify(player_dto.critter.hp, 0.01),
+		stepify(player_dto.critter.max_hp, 0.01),
+		stepify(player_dto.caster.mana, 0.01),
+		stepify(player_dto.caster.max_mana, 0.01),
+		stepify(player_dto.caster.casting, 0.01),
+		stepify(player_dto.caster.calm_down, 0.01),
 		player_dto.score,
 		player_dto.score_next_level,
 		player_dto.level,
