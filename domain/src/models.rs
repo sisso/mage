@@ -7,6 +7,7 @@ pub type V2 = glam::f32::Vec2;
 pub type V2I = glam::i32::IVec2;
 
 pub type Score = i32;
+pub type Level = i32;
 
 pub type Mana = f32;
 pub type Tick = u64;

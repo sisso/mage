@@ -17,6 +17,7 @@ pub fn load_player(world: &mut World, pos: V2) -> Entity {
         .with(Player {
             input: PlayerInput::default(),
             score: 0,
+            level: 0,
         })
         .with(Team::Player)
         .with(Damageable {

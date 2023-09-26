@@ -60,6 +60,8 @@ pub struct PlayerDto {
     pub caster: CasterDto,
     pub obj: ObjChangeDto,
     pub score: i32,
+    pub score_next_level: i32,
+    pub level: i32,
 }
 
 #[derive(ToVariant, FromVariant, Debug, Clone, Default)]
@@ -181,6 +183,8 @@ impl GameApi {
             critter: CritterDto {},
             caster: caster_dto,
             score: player.score,
+            score_next_level: player.next_level_required_score(),
+            level: player.level,
         })
     }
 

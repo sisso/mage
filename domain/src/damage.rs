@@ -35,7 +35,7 @@ pub fn process_hit(
 
         if let Some(owner) = owners.get(hit.source) {
             if let Some(player) = players.get_mut(owner.entity) {
-                player.score += damageable.kill_score;
+                player.update_score(damageable.kill_score);
             }
         }
     }
