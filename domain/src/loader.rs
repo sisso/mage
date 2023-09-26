@@ -5,6 +5,7 @@ use specs::prelude::*;
 
 use crate::cfg;
 use crate::models::*;
+use crate::player::{Player, PlayerInput};
 
 use super::components::*;
 

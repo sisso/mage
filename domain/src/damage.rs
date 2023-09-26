@@ -3,6 +3,7 @@ use specs::Entity;
 
 use crate::events::Events;
 use crate::models::Hp;
+use crate::player::Player;
 use crate::unwrap_or_return;
 
 use super::components::*;

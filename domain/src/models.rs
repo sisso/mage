@@ -97,13 +97,6 @@ pub struct SceneryParams {
     pub seed: u64,
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct PlayerInput {
-    pub input_dir: V2,
-    pub mouse_pos: V2,
-    pub cast: bool,
-}
-
 #[derive(Debug, Clone)]
 pub struct CastPoint {
     pub pos: V2,

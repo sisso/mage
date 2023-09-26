@@ -15,12 +15,6 @@ pub struct Velocity {
 }
 
 #[derive(Component, Debug, Clone)]
-pub struct Player {
-    pub input: PlayerInput,
-    pub score: Score,
-}
-
-#[derive(Component, Debug, Clone)]
 pub struct HasModel {
     pub model: Model,
 }

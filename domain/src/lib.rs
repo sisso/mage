@@ -7,6 +7,7 @@ use crate::components::*;
 use crate::error::GameError;
 use crate::events::Events;
 use crate::models::*;
+use crate::player::{Player, PlayerInput, PlayerSystem};
 use crate::systems::*;
 
 pub mod cfg;
@@ -17,6 +18,7 @@ pub mod events;
 pub mod loader;
 pub mod math;
 pub mod models;
+pub mod player;
 pub mod systems;
 pub mod utils;
 

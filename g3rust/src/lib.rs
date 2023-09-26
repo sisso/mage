@@ -3,7 +3,8 @@ use specs::prelude::*;
 
 use domain::components::*;
 use domain::error::GameError;
-use domain::models::{DeltaTime, PlayerInput, SceneryParams};
+use domain::models::{DeltaTime, SceneryParams};
+use domain::player::*;
 
 use crate::utils::*;
 
