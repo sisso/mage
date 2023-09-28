@@ -65,6 +65,7 @@ pub struct PlayerDto {
     pub score: i32,
     pub score_next_level: i32,
     pub level: i32,
+    pub free_skill_points: i32,
 }
 
 #[derive(ToVariant, FromVariant, Debug, Clone, Default)]
@@ -190,9 +191,10 @@ impl GameApi {
                 max_hp: dam.max_hp,
             },
             caster: caster_dto,
-            score: pla.score,
+            score: pla.score(),
             score_next_level: pla.next_level_required_score(),
-            level: pla.level,
+            level: pla.level(),
+            free_skill_points: pla.free_skill_points(),
         })
     }
 

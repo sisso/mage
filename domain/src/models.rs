@@ -19,6 +19,7 @@ pub type ModelRef = &'static str;
 pub type Model = Arc<str>;
 /// How much a work a caster need to execute to be able to cast a spell
 pub type CastComplexity = f32;
+pub type SkillPoint = i32;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct DeltaTime(pub f32);

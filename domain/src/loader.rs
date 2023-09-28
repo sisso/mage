@@ -14,11 +14,7 @@ pub fn load_player(world: &mut World, pos: V2) -> Entity {
         .create_entity()
         .with(Position { pos, angle: 0.0 })
         .with(Velocity::default())
-        .with(Player {
-            input: PlayerInput::default(),
-            score: 0,
-            level: 0,
-        })
+        .with(Player::default())
         .with(Team::Player)
         .with(Damageable {
             hp: 100.0,

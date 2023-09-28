@@ -19,14 +19,33 @@ pub struct PlayerInput {
 #[derive(Component, Debug, Clone)]
 pub struct Player {
     pub input: PlayerInput,
-    pub score: Score,
-    pub level: Level,
+    score: Score,
+    level: Level,
+    free_skill_points: SkillPoint,
+}
+
+impl Default for Player {
+    fn default() -> Self {
+        Player {
+            input: Default::default(),
+            score: 0,
+            level: 0,
+            free_skill_points: 0,
+        }
+    }
 }
 
 impl Player {
+
+
     pub fn update_score(&mut self, score: Score) {
         self.score += score;
-        self.level = level_from_score(self.score);
+        let new_level = level_from_score(self.score);
+        if new_level != self.level {
+            self.free_skill_points += new_level - self.level;
+            self.level = new_level;
+            log::debug!("player level up to {}, skill points {}", self.level, self.free_skill_points);
+        }
     }
 
     pub fn next_level_required_score(&self) -> Score {
@@ -34,6 +53,16 @@ impl Player {
             .into_iter()
             .find(|score| level_from_score(*score) != self.level)
             .unwrap_or(self.score)
+    }
+
+    pub fn score(&self) -> Score {
+        self.score
+    }
+    pub fn level(&self) -> Level {
+        self.level
+    }
+    pub fn free_skill_points(&self) -> SkillPoint {
+        self.free_skill_points
     }
 }
 
