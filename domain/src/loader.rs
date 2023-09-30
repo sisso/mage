@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use glam::Vec2;
 use specs::prelude::*;
+use crate::caster::Caster;
 
 use crate::cfg;
 use crate::models::*;

@@ -1,5 +1,6 @@
 use gdnative::prelude::*;
 use specs::prelude::*;
+use domain::caster::Caster;
 
 use domain::components::*;
 use domain::error::GameError;

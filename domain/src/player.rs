@@ -1,9 +1,10 @@
 use specs::prelude::*;
 use specs_derive::Component;
 
-use crate::components::{Caster, Critter, Damageable, Frame, Position, Velocity};
+use crate::components::{Critter, Damageable, Frame, Position, Velocity};
 use crate::models::*;
 use crate::{cfg, math};
+use crate::caster::Caster;
 
 pub fn level_from_score(score: Score) -> Level {
     f32::sqrt(score as f32).floor() as Level

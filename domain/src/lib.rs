@@ -2,6 +2,7 @@ use log::LevelFilter;
 use rand::prelude::StdRng;
 use rand::SeedableRng;
 use specs::prelude::*;
+use crate::caster::Caster;
 
 use crate::components::*;
 use crate::error::GameError;
@@ -21,6 +22,7 @@ pub mod models;
 pub mod player;
 pub mod systems;
 pub mod utils;
+pub mod caster;
 
 #[macro_export]
 macro_rules! unwrap_or_continue {

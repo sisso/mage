@@ -9,6 +9,7 @@ use crate::models::{Contacts, DeltaTime, Kind, SceneryParams, TotalTime, V2};
 use crate::player::Player;
 use crate::unwrap_or_return;
 use crate::{loader, math};
+use crate::caster::Caster;
 
 use super::components::*;
 

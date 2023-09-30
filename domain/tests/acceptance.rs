@@ -8,6 +8,7 @@ use domain::components::*;
 use domain::models::*;
 use domain::player::{Player, PlayerInput};
 use domain::{cfg, unwrap_or_continue, Api};
+use domain::caster::Caster;
 
 const DELTA_TIME: DeltaTime = DeltaTime(0.1);
 
