@@ -5,9 +5,54 @@
 [node name="arena_ui" type="Node2D"]
 script = ExtResource( 1 )
 
-[node name="description_label" type="Label" parent="."]
+[node name="DescriptionLabel" type="Label" parent="."]
 margin_right = 40.0
 margin_bottom = 14.0
-text = "Mana: 1/1
-Casting: 0.0
-Spell: Name"
+text = "HP: {0}/{1}
+Mana: {2}/{3}
+Casting: {4}
+Calm down: {5}
+Score: {6}/{7}
+Level: {8}
+Skill: {9}"
+
+[node name="UpgradeContainer" type="HBoxContainer" parent="."]
+margin_left = 2.0
+margin_top = 557.0
+margin_right = 310.0
+margin_bottom = 597.0
+
+[node name="UpgradeHealthButton" type="Button" parent="UpgradeContainer"]
+margin_right = 54.0
+margin_bottom = 40.0
+text = "Health"
+
+[node name="UpgradeManaButton" type="Button" parent="UpgradeContainer"]
+margin_left = 58.0
+margin_right = 104.0
+margin_bottom = 40.0
+text = "Mana"
+
+[node name="UpgradeCastingButton" type="Button" parent="UpgradeContainer"]
+margin_left = 108.0
+margin_right = 166.0
+margin_bottom = 40.0
+text = "Casting"
+
+[node name="UpgradeRechargeButton" type="Button" parent="UpgradeContainer"]
+margin_left = 170.0
+margin_right = 240.0
+margin_bottom = 40.0
+text = "Recharge"
+
+[node name="UpgradeFireboldButton" type="Button" parent="UpgradeContainer"]
+margin_left = 244.0
+margin_right = 308.0
+margin_bottom = 40.0
+text = "Firebold"
+
+[connection signal="pressed" from="UpgradeContainer/UpgradeHealthButton" to="." method="_on_upgrade_button_pressed" binds= [ "health" ]]
+[connection signal="pressed" from="UpgradeContainer/UpgradeManaButton" to="." method="_on_upgrade_button_pressed" binds= [ "mana" ]]
+[connection signal="pressed" from="UpgradeContainer/UpgradeCastingButton" to="." method="_on_upgrade_button_pressed" binds= [ "casting" ]]
+[connection signal="pressed" from="UpgradeContainer/UpgradeRechargeButton" to="." method="_on_upgrade_button_pressed" binds= [ "recharge" ]]
+[connection signal="pressed" from="UpgradeContainer/UpgradeFireboldButton" to="." method="_on_upgrade_button_pressed" binds= [ "firebold" ]]

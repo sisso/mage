@@ -1,24 +1,17 @@
 extends Node2D
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-var api
-var ui
+onready var api = $"../api"
+onready var ui = $"../arena_ui"
 
 var idmap = {}
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	api = get_node("../api")
-	print("found api %s" % api)
-	
-	ui = get_node("../arena_ui")
-	print("found ui %s" % ui)
+var request_upgrade = ""
 
+func _ready():
+	ui.connect("on_upgrade_button_pressed", self, "_on_click_skill_upgrade")
+	
 	api.start_scenery(get_viewport().get_visible_rect().size)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var gi = api.new_run_update_input()
 	gi.total_time = Time.get_ticks_msec()
@@ -37,7 +30,11 @@ func _process(delta):
 		gi.mouse_press  = true
 
 	gi.mouse_pos = get_viewport().get_mouse_position()
-	
+	if request_upgrade != "":
+		print("setting requesting upgrade ", request_upgrade)
+		gi.request_upgrade = request_upgrade
+		request_upgrade = ""
+
 	# print("running update ", gi)
 	var output = api.run_update(gi)
 	# print("receive ", output)
@@ -76,3 +73,6 @@ func _process(delta):
 		else:
 			print("invalid obj ", obj)
 	
+
+func _on_click_skill_upgrade(code):
+	request_upgrade = code

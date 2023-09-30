@@ -69,6 +69,7 @@ fn test_api_move_player_by_input_forward() {
         input_dir: V2::new(1.0, 0.0),
         mouse_pos: V2::ZERO,
         cast: false,
+        upgrade: None,
     })
     .unwrap();
 
@@ -95,6 +96,7 @@ fn test_api_rotate_player() {
             input_dir: V2::ZERO,
             mouse_pos,
             cast: false,
+            upgrade: None,
         })
         .unwrap();
         api.update(DELTA_TIME).unwrap();

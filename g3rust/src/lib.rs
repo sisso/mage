@@ -22,8 +22,22 @@ pub struct GameApi {
 pub struct GameApiInput {
     pub mouse_pos: Vector2,
     pub mouse_press: bool,
+    pub request_upgrade: String,
     pub input: Vector2,
     pub delta_time: f32,
+}
+
+impl GameApiInput {
+    fn parse_request_upgrade(&self) -> Option<PlayerUpgradeRequest> {
+        match self.request_upgrade.as_str()  {
+            "health" => Some(PlayerUpgradeRequest::Health),
+            "mana" => Some(PlayerUpgradeRequest::Mana),
+            "casting" => Some(PlayerUpgradeRequest::SkillCasting),
+            "recharge" => Some(PlayerUpgradeRequest::Recharge),
+            "firebold" => Some(PlayerUpgradeRequest::Firebold),
+            _ => None
+        }
+    }
 }
 
 #[derive(ToVariant, FromVariant, Debug, Clone, Default)]
@@ -105,12 +119,14 @@ impl GameApi {
 
     #[method]
     pub fn run_update(&mut self, input: GameApiInput) -> GameApiOutput {
-        self.set_player_input(PlayerInput {
+        let mut player_input = PlayerInput {
             input_dir: g2v(input.input),
             mouse_pos: g2v(input.mouse_pos),
             cast: input.mouse_press,
-        })
-        .expect("fail to set player input");
+            upgrade: input.parse_request_upgrade(),
+        };
+
+        self.set_player_input(player_input).expect("fail to set player input");
 
         let mut added = vec![];
         let mut removed = vec![];

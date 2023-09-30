@@ -1,7 +1,7 @@
 use specs::prelude::*;
 use specs_derive::Component;
 
-use crate::components::{Caster, Critter, Frame, Position, Velocity};
+use crate::components::{Caster, Critter, Damageable, Frame, Position, Velocity};
 use crate::models::*;
 use crate::{cfg, math};
 
@@ -9,11 +9,21 @@ pub fn level_from_score(score: Score) -> Level {
     f32::sqrt(score as f32).floor() as Level
 }
 
+#[derive(Debug, Clone)]
+pub enum PlayerUpgradeRequest {
+    Health,
+    Mana,
+    Recharge,
+    SkillCasting,
+    Firebold
+}
+
+
 #[derive(Debug, Clone, Default)]
 pub struct PlayerInput {
-    pub input_dir: V2,
-    pub mouse_pos: V2,
+    pub input_dir: V2, pub mouse_pos: V2,
     pub cast: bool,
+    pub upgrade: Option<PlayerUpgradeRequest>,
 }
 
 #[derive(Component, Debug, Clone)]
@@ -36,8 +46,6 @@ impl Default for Player {
 }
 
 impl Player {
-
-
     pub fn update_score(&mut self, score: Score) {
         self.score += score;
         let new_level = level_from_score(self.score);
@@ -70,27 +78,33 @@ pub struct PlayerSystem;
 
 impl<'a> System<'a> for PlayerSystem {
     type SystemData = (
-        ReadStorage<'a, Player>,
+        WriteStorage<'a, Player>,
         WriteStorage<'a, Velocity>,
         WriteStorage<'a, Position>,
         ReadStorage<'a, Critter>,
         WriteStorage<'a, Caster>,
-        ReadExpect<'a, Frame>,
+        WriteStorage<'a, Damageable>,
     );
 
     fn run(
         &mut self,
-        (players, mut velocities, mut positions, critters, mut caster, _frame): Self::SystemData,
+        (mut players, mut velocities, mut positions, mut critters, mut caster, mut damageables): Self::SystemData,
     ) {
-        for (pla, vel, pos, cri, cas) in (
-            &players,
+        for (pla, vel, pos, cri, cas, dam) in (
+            &mut players,
             &mut velocities,
             &mut positions,
             &critters,
             &mut caster,
+            &mut damageables,
         )
             .join()
         {
+            // level up
+            if let Some(upgrade) = pla.input.upgrade.clone() {
+                _ = player_upgrade(pla, dam, cas, upgrade);
+            }
+
             // move
             if pla.input.input_dir.length_squared() <= 0.1 {
                 vel.vel = V2::ZERO;
@@ -111,6 +125,33 @@ impl<'a> System<'a> for PlayerSystem {
             }
         }
     }
+}
+
+fn player_upgrade(player: &mut Player, damageable: &mut Damageable, caster: &mut Caster, request:PlayerUpgradeRequest) -> Result<(), ()> {
+    if player.free_skill_points <= 0 {
+        return Err(());
+    }
+
+    player.free_skill_points -= 1;
+
+    match request {
+        PlayerUpgradeRequest::Health => {
+            damageable.max_hp += 1.0;
+        }
+        PlayerUpgradeRequest::Mana => {
+            caster.max_mana += 1.0;
+        }
+        PlayerUpgradeRequest::Recharge => {
+            caster.mana_recharge += 0.1;
+        }
+        PlayerUpgradeRequest::SkillCasting => {
+            caster.casting_skill += 0.1;
+        }
+        PlayerUpgradeRequest::Firebold => {
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
