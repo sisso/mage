@@ -25,30 +25,45 @@ margin_bottom = 597.0
 [node name="UpgradeHealthButton" type="Button" parent="UpgradeContainer"]
 margin_right = 54.0
 margin_bottom = 40.0
+focus_mode = 0
+shortcut_in_tooltip = false
+enabled_focus_mode = 0
 text = "Health"
 
 [node name="UpgradeManaButton" type="Button" parent="UpgradeContainer"]
 margin_left = 58.0
 margin_right = 104.0
 margin_bottom = 40.0
+focus_mode = 0
+shortcut_in_tooltip = false
+enabled_focus_mode = 0
 text = "Mana"
 
 [node name="UpgradeCastingButton" type="Button" parent="UpgradeContainer"]
 margin_left = 108.0
 margin_right = 166.0
 margin_bottom = 40.0
+focus_mode = 0
+shortcut_in_tooltip = false
+enabled_focus_mode = 0
 text = "Casting"
 
 [node name="UpgradeRechargeButton" type="Button" parent="UpgradeContainer"]
 margin_left = 170.0
 margin_right = 240.0
 margin_bottom = 40.0
+focus_mode = 0
+shortcut_in_tooltip = false
+enabled_focus_mode = 0
 text = "Recharge"
 
 [node name="UpgradeFireboldButton" type="Button" parent="UpgradeContainer"]
 margin_left = 244.0
 margin_right = 308.0
 margin_bottom = 40.0
+focus_mode = 0
+shortcut_in_tooltip = false
+enabled_focus_mode = 0
 text = "Firebold"
 
 [connection signal="pressed" from="UpgradeContainer/UpgradeHealthButton" to="." method="_on_upgrade_button_pressed" binds= [ "health" ]]

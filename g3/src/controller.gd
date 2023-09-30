@@ -7,6 +7,8 @@ var idmap = {}
 
 var request_upgrade = ""
 
+var on_click = false
+
 func _ready():
 	ui.connect("on_upgrade_button_pressed", self, "_on_click_skill_upgrade")
 	
@@ -26,8 +28,8 @@ func _process(delta):
 	if Input.is_action_pressed("ui_up"):
 		gi.input.y -= 1
 
-	if Input.is_mouse_button_pressed(1):
-		gi.mouse_press  = true
+	if on_click:
+		gi.mouse_press = true
 
 	gi.mouse_pos = get_viewport().get_mouse_position()
 	if request_upgrade != "":
@@ -76,3 +78,8 @@ func _process(delta):
 
 func _on_click_skill_upgrade(code):
 	request_upgrade = code
+
+func _unhandled_input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == 1:
+			on_click = event.pressed

@@ -40,7 +40,7 @@ impl Default for Player {
             input: Default::default(),
             score: 0,
             level: 0,
-            free_skill_points: 0,
+            free_skill_points: 4,
         }
     }
 }
