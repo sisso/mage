@@ -3,14 +3,14 @@ use std::collections::HashSet;
 use rand::prelude::*;
 use specs::prelude::*;
 
+use crate::caster::Caster;
 use crate::damage;
 use crate::events::Events;
 use crate::models::{Contacts, DeltaTime, SceneryParams, TotalTime, V2};
 use crate::player::Player;
+use crate::spell::SpellEffect;
 use crate::unwrap_or_return;
 use crate::{loader, math};
-use crate::caster::Caster;
-use crate::spell::SpellKind;
 
 use super::components::*;
 
@@ -67,7 +67,6 @@ impl<'a> System<'a> for CasterSystem {
         &mut self,
         (mut casters, positions, frame, mut entities, updates, mut events): Self::SystemData,
     ) {
-        // TODO: hack collect: used to free &entities so we can create a builder later
         for (caster_entity, cas, pos) in (&entities, &mut casters, &positions)
             .join()
             .collect::<Vec<_>>()
@@ -77,8 +76,8 @@ impl<'a> System<'a> for CasterSystem {
             if let Some(spell) = cas.has_cast() {
                 let casting_pos = pos.pos + V2::from_angle(pos.angle) * 50.0;
 
-                match spell.kind {
-                    SpellKind::Projectile { damage, speed, ttl } => {
+                match spell.effect {
+                    SpellEffect::Projectile { damage, speed, ttl } => {
                         let missile_entity = loader::create_magic_missile(
                             updates.create_entity(&mut entities),
                             Some(caster_entity),

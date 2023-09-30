@@ -1,9 +1,12 @@
+use std::ops::Deref;
+
 use log::LevelFilter;
 use rand::prelude::StdRng;
 use rand::SeedableRng;
+use shred::Fetch;
 use specs::prelude::*;
-use crate::caster::Caster;
 
+use crate::caster::Caster;
 use crate::components::*;
 use crate::error::GameError;
 use crate::events::Events;
@@ -11,6 +14,7 @@ use crate::models::*;
 use crate::player::{Player, PlayerInput, PlayerSystem};
 use crate::systems::*;
 
+pub mod caster;
 pub mod cfg;
 pub mod components;
 pub mod damage;
@@ -20,10 +24,9 @@ pub mod loader;
 pub mod math;
 pub mod models;
 pub mod player;
+pub mod spell;
 pub mod systems;
 pub mod utils;
-pub mod caster;
-pub mod spell;
 
 #[macro_export]
 macro_rules! unwrap_or_continue {
@@ -145,5 +148,9 @@ impl Api {
     pub fn take_events(&mut self) -> Events {
         let mut events = self.world.write_resource::<Events>();
         events.take()
+    }
+
+    pub fn get_scenery_params(&self) -> Fetch<SceneryParams> {
+        self.world.read_resource::<SceneryParams>()
     }
 }

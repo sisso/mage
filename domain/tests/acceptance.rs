@@ -9,6 +9,7 @@ use domain::models::*;
 use domain::player::{Player, PlayerInput};
 use domain::{cfg, unwrap_or_continue, Api};
 use domain::caster::Caster;
+use domain::cfg::Cfg;
 
 const DELTA_TIME: DeltaTime = DeltaTime(0.1);
 
@@ -17,6 +18,7 @@ fn new_scenery() -> Api {
     api.start_scenery(SceneryParams {
         screen_size: screen_size(),
         seed: 0,
+        cfg: Cfg::default(),
     })
     .unwrap();
     api
@@ -69,7 +71,7 @@ fn test_api_move_player_by_input_forward() {
     api.set_player_input(PlayerInput {
         input_dir: V2::new(1.0, 0.0),
         mouse_pos: V2::ZERO,
-        cast: false,
+        cast: None,
         upgrade: None,
     })
     .unwrap();
@@ -96,7 +98,7 @@ fn test_api_rotate_player() {
         api.set_player_input(PlayerInput {
             input_dir: V2::ZERO,
             mouse_pos,
-            cast: false,
+            cast: None,
             upgrade: None,
         })
         .unwrap();
@@ -120,15 +122,17 @@ fn test_api_cast() {
     assert_eq!(false, pd.casting.get_casting().is_some());
     assert_eq!(false, pd.casting.get_calm_down().is_some());
 
+    let spell = api.get_scenery_params().cfg.spells[0].clone();
+
     // compute time to cast
-    let time_to_cast = cfg::FIRE_MISSILE.time_to_cast(pd.casting_skill);
-    let time_to_calm = cfg::FIRE_MISSILE.time_to_calm(pd.casting_skill);
+    let time_to_cast = spell.per_level[0].time_to_cast(pd.casting_skill);
+    let time_to_calm = spell.per_level[0].time_to_calm(pd.casting_skill);
     let half_calm_down = time_to_calm.mult(0.5);
 
     // check casting
     let mut player_input = PlayerInput::default();
     player_input.mouse_pos = get_mouse_angle_0(&api);
-    player_input.cast = true;
+    player_input.cast = Some(spell.spell_code);
     api.set_player_input(player_input).unwrap();
     api.update(DELTA_TIME).unwrap();
 

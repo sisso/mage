@@ -72,12 +72,6 @@ pub struct Collider {
     pub sensor: bool,
 }
 
-impl Collider {
-    pub fn is_colliding(&self, _pos: V2, _other: &Collider, _other_pos: V2) -> bool {
-        todo!()
-    }
-}
-
 #[derive(Component, Debug, Clone)]
 pub enum Shape {
     Circle,
@@ -96,44 +90,5 @@ pub struct Owner {
 
 #[cfg(test)]
 mod test {
-    use crate::caster::Caster;
-    use crate::spell::{SpellKind, Spell};
     use super::*;
-
-    const SPELL: Spell = Spell {
-        mana_cost: 5.0,
-        cast_complexity: 1.0,
-        calm_down_complexity: 1.0,
-        kind: SpellKind::Projectile {
-            damage: 1.0,
-            speed: 1.0,
-            ttl: DeltaTime(1.0),
-        },
-    };
-
-    #[test]
-    fn test_caster_casting() {
-        let mut c = new_caster();
-        assert!(c.cast(&SPELL).is_ok());
-        assert!(c.casting.get_casting().is_some());
-        let mana_after_cast = c.max_mana - SPELL.mana_cost;
-        assert_eq!(mana_after_cast, c.mana);
-    }
-
-    #[test]
-    fn test_caster_without_mana() {
-        let mut c = new_caster();
-        let not_enough_mana = SPELL.mana_cost - 1.0;
-        c.mana = not_enough_mana;
-        assert!(c.cast(&SPELL).is_err());
-        assert!(c.casting.is_idle());
-        assert_eq!(not_enough_mana, c.mana);
-    }
-
-    fn new_caster() -> Caster {
-        let mut c = Caster::default();
-        c.max_mana = 10.0;
-        c.mana = c.max_mana;
-        c
-    }
 }

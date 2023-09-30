@@ -2,15 +2,17 @@ use std::sync::Arc;
 
 use glam::Vec2;
 use specs::prelude::*;
-use crate::caster::Caster;
 
+use crate::caster::Caster;
 use crate::cfg;
 use crate::models::*;
-use crate::player::{Player, PlayerInput};
+use crate::player::Player;
 
 use super::components::*;
 
 pub fn load_player(world: &mut World, pos: V2) -> Entity {
+    let caster = Caster::new(&world.read_resource::<SceneryParams>().cfg.spells);
+
     world
         .create_entity()
         .with(Position { pos, angle: 0.0 })
@@ -26,7 +28,7 @@ pub fn load_player(world: &mut World, pos: V2) -> Entity {
         .with(HasModel {
             model: Arc::from("player"),
         })
-        .with(Caster::default())
+        .with(caster)
         .with(Collider {
             shape: Shape::Circle,
             scale: 12.0,

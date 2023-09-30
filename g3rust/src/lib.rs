@@ -1,6 +1,7 @@
 use gdnative::prelude::*;
 use specs::prelude::*;
 use domain::caster::Caster;
+use domain::cfg::Cfg;
 
 use domain::components::*;
 use domain::error::GameError;
@@ -109,6 +110,7 @@ impl GameApi {
             .start_scenery(SceneryParams {
                 screen_size: g2v(screen_size),
                 seed: 0,
+                cfg: Cfg::default(),
             })
             .expect("fail to start scenery");
     }
@@ -120,10 +122,16 @@ impl GameApi {
 
     #[method]
     pub fn run_update(&mut self, input: GameApiInput) -> GameApiOutput {
-        let mut player_input = PlayerInput {
+        let spell = if input.mouse_press {
+            Some(self.api.get_scenery_params().cfg.spells[0].spell_code.clone())
+        } else {
+            None
+        };
+
+        let player_input = PlayerInput {
             input_dir: g2v(input.input),
             mouse_pos: g2v(input.mouse_pos),
-            cast: input.mouse_press,
+            cast: spell,
             upgrade: input.parse_request_upgrade(),
         };
 

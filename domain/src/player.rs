@@ -1,10 +1,11 @@
 use specs::prelude::*;
 use specs_derive::Component;
 
-use crate::components::{Critter, Damageable, Frame, Position, Velocity};
-use crate::models::*;
-use crate::{cfg, math};
 use crate::caster::Caster;
+use crate::components::{Critter, Damageable, Position, Velocity};
+use crate::math;
+use crate::models::*;
+use crate::spell::SpellCode;
 
 pub fn level_from_score(score: Score) -> Level {
     f32::sqrt(score as f32).floor() as Level
@@ -16,14 +17,14 @@ pub enum PlayerUpgradeRequest {
     Mana,
     Recharge,
     SkillCasting,
-    Firebold
+    Firebold,
 }
-
 
 #[derive(Debug, Clone, Default)]
 pub struct PlayerInput {
-    pub input_dir: V2, pub mouse_pos: V2,
-    pub cast: bool,
+    pub input_dir: V2,
+    pub mouse_pos: V2,
+    pub cast: Option<SpellCode>,
     pub upgrade: Option<PlayerUpgradeRequest>,
 }
 
@@ -53,7 +54,11 @@ impl Player {
         if new_level != self.level {
             self.free_skill_points += new_level - self.level;
             self.level = new_level;
-            log::debug!("player level up to {}, skill points {}", self.level, self.free_skill_points);
+            log::debug!(
+                "player level up to {}, skill points {}",
+                self.level,
+                self.free_skill_points
+            );
         }
     }
 
@@ -85,11 +90,20 @@ impl<'a> System<'a> for PlayerSystem {
         ReadStorage<'a, Critter>,
         WriteStorage<'a, Caster>,
         WriteStorage<'a, Damageable>,
+        ReadExpect<'a, SceneryParams>,
     );
 
     fn run(
         &mut self,
-        (mut players, mut velocities, mut positions, mut critters, mut caster, mut damageables): Self::SystemData,
+        (
+            mut players,
+            mut velocities,
+            mut positions,
+            mut critters,
+            mut caster,
+            mut damageables,
+            scenery_params,
+        ): Self::SystemData,
     ) {
         for (pla, vel, pos, cri, cas, dam) in (
             &mut players,
@@ -118,8 +132,8 @@ impl<'a> System<'a> for PlayerSystem {
             pos.angle = math::angle_of(mouse_delta);
 
             // casting
-            if pla.input.cast {
-                let rs = cas.cast(&cfg::FIRE_MISSILE);
+            if let Some(code) = pla.input.cast.take() {
+                let rs = cas.cast(code);
                 if rs.is_ok() {
                     log::debug!("player starting to cast");
                 }
@@ -128,7 +142,12 @@ impl<'a> System<'a> for PlayerSystem {
     }
 }
 
-fn player_upgrade(player: &mut Player, damageable: &mut Damageable, caster: &mut Caster, request:PlayerUpgradeRequest) -> Result<(), ()> {
+fn player_upgrade(
+    player: &mut Player,
+    damageable: &mut Damageable,
+    caster: &mut Caster,
+    request: PlayerUpgradeRequest,
+) -> Result<(), ()> {
     if player.free_skill_points <= 0 {
         return Err(());
     }
@@ -148,8 +167,7 @@ fn player_upgrade(player: &mut Player, damageable: &mut Damageable, caster: &mut
         PlayerUpgradeRequest::SkillCasting => {
             caster.casting_skill += 0.1;
         }
-        PlayerUpgradeRequest::Firebold => {
-        }
+        PlayerUpgradeRequest::Firebold => {}
     }
 
     Ok(())

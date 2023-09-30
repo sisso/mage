@@ -1,6 +1,8 @@
 use specs::prelude::*;
 use specs_derive::Component;
-use crate::spell::Spell;
+
+use crate::spell::{Spell, SpellAtLevel, SpellBook, SpellBookEntry, SpellCode};
+
 use super::models::*;
 
 #[derive(Component, Debug, Clone)]
@@ -12,6 +14,7 @@ pub struct Caster {
     // time needed to finish a cast
     pub casting: CasterState,
     pub casting_skill: CastComplexity,
+    pub spell_book: SpellBook,
 }
 
 impl Default for Caster {
@@ -22,12 +25,33 @@ impl Default for Caster {
             mana_recharge: 1.0,
             casting_skill: 1.0,
             casting: CasterState::Idle,
+            spell_book: SpellBook::default(),
         }
     }
 }
 
 impl Caster {
-    pub fn cast(&mut self, spell: &Spell) -> Result<(), ()> {
+    pub fn new(spells: &Vec<Spell>) -> Caster {
+        let mut caster = Caster::default();
+        let spell_book = SpellBook {
+            spells: spells
+                .iter()
+                .map(|spell| SpellBookEntry {
+                    level: 0,
+                    spell: spell.clone(),
+                })
+                .collect(),
+        };
+        caster.spell_book = spell_book;
+        caster
+    }
+
+    pub fn cast(&mut self, spell: SpellCode) -> Result<(), ()> {
+        let spell = self.get_spell(spell)?.clone();
+        self.cast_spell_at_level(spell)
+    }
+
+    fn cast_spell_at_level(&mut self, spell: SpellAtLevel) -> Result<(), ()> {
         if !self.casting.is_idle() {
             return Err(());
         }
@@ -87,11 +111,75 @@ impl Caster {
         }
     }
 
-    pub fn has_cast(&self) -> Option<&Spell> {
+    pub fn has_cast(&self) -> Option<&SpellAtLevel> {
         match &self.casting {
             CasterState::Cast { spell } => Some(spell),
             _ => None,
         }
     }
+
+    pub fn get_spell(&self, code: SpellCode) -> Result<&SpellAtLevel, ()> {
+        self.spell_book
+            .spells
+            .iter()
+            .find(|e| e.spell.spell_code == code)
+            .ok_or(())
+            .and_then(|e| e.spell.per_level.get(e.level as usize).ok_or(()))
+    }
 }
 
+#[cfg(test)]
+mod test {
+    use crate::caster::Caster;
+    use crate::spell::{Spell, SpellAtLevel, SpellBookEntry, SpellEffect};
+
+    use super::*;
+
+    const SPELL_CODE: &'static str = "spell";
+
+    const SPELL: SpellAtLevel = SpellAtLevel {
+        mana_cost: 5.0,
+        cast_complexity: 1.0,
+        calm_down_complexity: 1.0,
+        effect: SpellEffect::Projectile {
+            damage: 1.0,
+            speed: 1.0,
+            ttl: DeltaTime(1.0),
+        },
+    };
+
+    fn new_caster() -> Caster {
+        let mut c = Caster::default();
+        c.max_mana = 10.0;
+        c.mana = c.max_mana;
+        c.spell_book = SpellBook {
+            spells: vec![SpellBookEntry {
+                level: 0,
+                spell: Spell {
+                    spell_code: SpellCode::from(SPELL_CODE),
+                    per_level: vec![SPELL],
+                },
+            }],
+        };
+        c
+    }
+
+    #[test]
+    fn test_caster_casting() {
+        let mut c = new_caster();
+        assert!(c.cast(SpellCode::from(SPELL_CODE)).is_ok());
+        assert!(c.casting.get_casting().is_some());
+        let mana_after_cast = c.max_mana - SPELL.mana_cost;
+        assert_eq!(mana_after_cast, c.mana);
+    }
+
+    #[test]
+    fn test_caster_without_mana() {
+        let mut c = new_caster();
+        let not_enough_mana = SPELL.mana_cost - 1.0;
+        c.mana = not_enough_mana;
+        assert!(c.cast(SpellCode::from(SPELL_CODE)).is_err());
+        assert!(c.casting.is_idle());
+        assert_eq!(not_enough_mana, c.mana);
+    }
+}

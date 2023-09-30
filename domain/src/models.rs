@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
 use specs::Entity;
-use crate::spell::Spell;
+use crate::cfg::Cfg;
+use crate::spell::SpellAtLevel;
 
 pub type Radians = f32;
 pub type V2 = glam::f32::Vec2;
@@ -98,6 +99,7 @@ impl std::ops::Sub<DeltaTime> for DeltaTime {
 pub struct SceneryParams {
     pub screen_size: V2,
     pub seed: u64,
+    pub cfg: Cfg,
 }
 
 #[derive(Debug, Clone)]
@@ -117,10 +119,10 @@ pub struct CastPoint {
 pub enum CasterState {
     Idle,
     Cast {
-        spell: Spell,
+        spell: SpellAtLevel,
     },
     Casting {
-        spell: Spell,
+        spell: SpellAtLevel,
         /// decrement until zero
         progress: CastComplexity,
     },
