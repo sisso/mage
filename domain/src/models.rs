@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use specs::Entity;
+use crate::spell::Spell;
 
 pub type Radians = f32;
 pub type V2 = glam::f32::Vec2;
@@ -103,42 +104,6 @@ pub struct SceneryParams {
 pub struct CastPoint {
     pub pos: V2,
     pub angle: Radians,
-}
-
-#[derive(Debug, Clone)]
-pub enum Kind {
-    Projectile {
-        damage: Damage,
-        speed: Speed,
-        ttl: DeltaTime,
-    },
-    ExplosiveProject {
-        damage: Damage,
-        speed: Speed,
-        radius: Radius,
-    },
-    Area {
-        damage: Damage,
-        radius: Radius,
-    },
-}
-
-#[derive(Debug, Clone)]
-pub struct Spell {
-    pub mana_cost: Mana,
-    pub cast_complexity: CastComplexity,
-    pub calm_down_complexity: CastComplexity,
-    pub kind: Kind,
-}
-
-impl Spell {
-    pub fn time_to_cast(&self, casting_skill: CastComplexity) -> DeltaTime {
-        DeltaTime(self.cast_complexity / casting_skill)
-    }
-
-    pub fn time_to_calm(&self, casting_skill: CastComplexity) -> DeltaTime {
-        DeltaTime(self.calm_down_complexity / casting_skill)
-    }
 }
 
 // #[derive(Debug, Clone)]

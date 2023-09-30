@@ -97,13 +97,14 @@ pub struct Owner {
 #[cfg(test)]
 mod test {
     use crate::caster::Caster;
+    use crate::spell::{SpellKind, Spell};
     use super::*;
 
     const SPELL: Spell = Spell {
         mana_cost: 5.0,
         cast_complexity: 1.0,
         calm_down_complexity: 1.0,
-        kind: Kind::Projectile {
+        kind: SpellKind::Projectile {
             damage: 1.0,
             speed: 1.0,
             ttl: DeltaTime(1.0),

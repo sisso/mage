@@ -23,6 +23,7 @@ pub mod player;
 pub mod systems;
 pub mod utils;
 pub mod caster;
+pub mod spell;
 
 #[macro_export]
 macro_rules! unwrap_or_continue {

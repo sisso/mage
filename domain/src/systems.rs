@@ -5,11 +5,12 @@ use specs::prelude::*;
 
 use crate::damage;
 use crate::events::Events;
-use crate::models::{Contacts, DeltaTime, Kind, SceneryParams, TotalTime, V2};
+use crate::models::{Contacts, DeltaTime, SceneryParams, TotalTime, V2};
 use crate::player::Player;
 use crate::unwrap_or_return;
 use crate::{loader, math};
 use crate::caster::Caster;
+use crate::spell::SpellKind;
 
 use super::components::*;
 
@@ -77,7 +78,7 @@ impl<'a> System<'a> for CasterSystem {
                 let casting_pos = pos.pos + V2::from_angle(pos.angle) * 50.0;
 
                 match spell.kind {
-                    Kind::Projectile { damage, speed, ttl } => {
+                    SpellKind::Projectile { damage, speed, ttl } => {
                         let missile_entity = loader::create_magic_missile(
                             updates.create_entity(&mut entities),
                             Some(caster_entity),

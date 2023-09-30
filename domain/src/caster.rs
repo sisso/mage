@@ -1,5 +1,6 @@
 use specs::prelude::*;
 use specs_derive::Component;
+use crate::spell::Spell;
 use super::models::*;
 
 #[derive(Component, Debug, Clone)]

@@ -1,8 +1,9 @@
-use crate::models::{DeltaTime, Kind, Spell};
+use crate::models::{DeltaTime};
+use crate::spell::{SpellKind, Spell};
 
 pub const FIRE_MISSILE: Spell = Spell {
     mana_cost: 2.0,
-    kind: Kind::Projectile {
+    kind: SpellKind::Projectile {
         damage: 10.0,
         speed: 500.0,
         ttl: DeltaTime(5.0),
